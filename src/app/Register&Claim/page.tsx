@@ -1,5 +1,6 @@
 "use client"
 import React,{useState} from 'react'
+import { useRouter } from 'next/navigation';
 
 export default function page() {
 const [isSelected,setIsSelected] =useState<boolean>(false);
@@ -8,6 +9,8 @@ const [isSelectedRegister,setIsSelectedRegister] = useState<boolean>(false);
 const [orgAddress,setOrgAddress]=useState<string>();
 const [token,setToken]=useState<string>();
 const [error,setError]=useState<string>();
+
+const router = useRouter();
 
 
 const RegisterClaim=()=>{
@@ -69,7 +72,7 @@ const RegisterClaim=()=>{
 
     const Register=()=>{
         const handleRegister=()=>{
-
+              router.push('/OrganisationDashboard');
         }
         return(
             <div className="flex flex-col items-center justify-center h-screen">

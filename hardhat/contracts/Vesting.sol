@@ -49,10 +49,15 @@ contract TokenVesting is Ownable {
     function whiteListStakeholders(address _Stakeholder,uint256 _amount) external onlyRegisteredOrg {
     organizations[msg.sender].stakeholder[_Stakeholder].stakeholderAddress= _Stakeholder;
     organizations[msg.sender].stakeholder[_Stakeholder].isWhitelisted= true;
-    organizations[msg.sender].stakeholder[_Stakeholder].isClaimed=false ;
-    organizations[msg.sender].stakeholder[_Stakeholder].amount=_amount*10**18 ;
-
+    if( organizations[msg.sender].stakeholder[_Stakeholder].isClaimed==false){
+       organizations[msg.sender].stakeholder[_Stakeholder].isClaimed==true;
+    }else{
+         organizations[msg.sender].stakeholder[_Stakeholder].isClaimed==false;
     }
+   
+    organizations[msg.sender].stakeholder[_Stakeholder].amount=_amount*10**18 ;
+    }
+    
 
     function claimTokens(address org) external  {
       require( organizations[org].orgAddress!=address(0),"Not a Registered Organisation");
