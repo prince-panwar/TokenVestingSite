@@ -1,8 +1,10 @@
 
-
+import ConnectWallet from "./component/connectWallet"
 export default function Home() {
   return (
-    <><h1>Hi</h1></>
-   
+  <div>
+    <ConnectWallet/>
+  </div>
+
   )
 }

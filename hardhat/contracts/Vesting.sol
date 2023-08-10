@@ -74,6 +74,9 @@ contract TokenVesting is Ownable {
         amount = organizations[org].vestingSchedule.amount;
 
     }
+    function isOrganization() external view returns(bool){
+        return organizations[msg.sender].orgAddress != address(0);
+    }
 
     modifier onlyRegisteredOrg (){
      require(organizations[msg.sender].orgAddress != address(0), "Organization not registered");
