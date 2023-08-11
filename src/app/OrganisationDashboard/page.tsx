@@ -201,7 +201,7 @@ export default function page(){
     return (
      <>
      {header()}
-     {!isAddStakeholder&&!isLockToken&&!isVestingPeriod&&( <div className="flex flex-col items-center justify-center text-lg h-screen  text-center font-extralight text-size-lg"><h1>Welcome to the Organisatioin dashboad you can lock tokens , schedule vesting period,and add Stakeholder here</h1></div> )}
+     {!isAddStakeholder&&!isLockToken&&!isVestingPeriod&&( <div className="flex flex-col items-center justify-center text-lg h-screen  text-center font-extralight text-size-lg"><h1>Welcome to the Dashboad you can lock tokens , schedule vesting period and add Stakeholders here</h1></div> )}
      {isLockToken&&(LockToken())}
      {isVestingPeriod&&(vesting())}
      {isAddStakeholder&&(StakeholdersWhiteListing())}

@@ -5,7 +5,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract TokenVesting is Ownable {
 
- struct Stakeholder{
+
+
+   struct Stakeholder{
     address stakeholderAddress;
      bool isWhitelisted;
      uint256 amount;
@@ -47,17 +49,21 @@ contract TokenVesting is Ownable {
     }
 
     function whiteListStakeholders(address _Stakeholder,uint256 _amount) external onlyRegisteredOrg {
+    require(_Stakeholder!=address(0),"Please enter correct address");
     organizations[msg.sender].stakeholder[_Stakeholder].stakeholderAddress= _Stakeholder;
     organizations[msg.sender].stakeholder[_Stakeholder].isWhitelisted= true;
-    if( organizations[msg.sender].stakeholder[_Stakeholder].isClaimed==false){
-       organizations[msg.sender].stakeholder[_Stakeholder].isClaimed==true;
-    }else{
-         organizations[msg.sender].stakeholder[_Stakeholder].isClaimed==false;
-    }
-   
     organizations[msg.sender].stakeholder[_Stakeholder].amount=_amount*10**18 ;
     }
-    
+    function unwhiteListStakeholders(address _Stakeholder) external onlyRegisteredOrg {
+    require(_Stakeholder!=address(0),"Please enter correct address");
+    organizations[msg.sender].stakeholder[_Stakeholder].stakeholderAddress= _Stakeholder;
+    organizations[msg.sender].stakeholder[_Stakeholder].isWhitelisted= false;
+    organizations[msg.sender].stakeholder[_Stakeholder].amount=0 ;
+    }
+    function isWhiteListed(address _stakeholderAddress) external view onlyRegisteredOrg returns (bool){
+          require(organizations[msg.sender].stakeholder[_stakeholderAddress].stakeholderAddress!=address(0),"Not a stakeholeder");
+          return  organizations[msg.sender].stakeholder[_stakeholderAddress].isWhitelisted;
+    }
 
     function claimTokens(address org) external  {
       require( organizations[org].orgAddress!=address(0),"Not a Registered Organisation");
@@ -65,6 +71,7 @@ contract TokenVesting is Ownable {
       require(block.timestamp<=organizations[org].vestingSchedule.endTime,"The claiming period is over");
       require(organizations[org].stakeholder[msg.sender].stakeholderAddress!=address(0),"You are not white Listed for the claim");
       require(organizations[org].stakeholder[msg.sender].isClaimed!=true,"You have already claimed the amount");
+      require(organizations[org].stakeholder[msg.sender].isWhitelisted==true,"You are not white Listed for the claim");
       uint claimAmount = organizations[org].stakeholder[msg.sender].amount; 
       organizations[org].stakeholder[msg.sender].isClaimed=true; 
       organizations[org].token.transfer(msg.sender,claimAmount);
@@ -79,7 +86,9 @@ contract TokenVesting is Ownable {
         amount = organizations[org].vestingSchedule.amount;
 
     }
-    function isOrganization() external view returns(bool){
+
+   
+     function isOrganization() external view returns(bool){
         return organizations[msg.sender].orgAddress != address(0);
     }
 
@@ -89,3 +98,7 @@ contract TokenVesting is Ownable {
 
     }
 }
+
+
+    
+
