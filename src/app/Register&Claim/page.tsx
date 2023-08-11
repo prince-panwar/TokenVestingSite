@@ -1,8 +1,13 @@
 "use client"
 import React,{useState} from 'react'
 import { useRouter } from 'next/navigation';
+import detectEthereumProvider from '@metamask/detect-provider';
+import { ethers,Contract } from 'ethers';
+import ContractAbi from "../../../hardhat/artifacts/contracts/Vesting.sol/TokenVesting.json";
 
 export default function page() {
+const abi = ContractAbi.abi;
+const contractAddress="0x377776f3954b8CF802b0fE4dA745De274B7ff724";
 const [isSelected,setIsSelected] =useState<boolean>(false);
 const[isSelectedClaim,setIsSelectedClaim] = useState<boolean>(false); 
 const [isSelectedRegister,setIsSelectedRegister] = useState<boolean>(false);
@@ -12,6 +17,16 @@ const [error,setError]=useState<string>();
 
 const router = useRouter();
 
+const getInstance= async()=>{
+  try{
+  const signer = await provider?.getSigner();
+  const contractInst = new ethers.Contract(contractAddress,abi,signer);
+  setContractInstance(contractInst);
+  routeUser();
+  }catch(err:any){
+    console.log(err.message);
+  }
+}
 
 const RegisterClaim=()=>{
     return(
