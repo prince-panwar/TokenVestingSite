@@ -1,6 +1,7 @@
 "use client"
 import React, { useState} from 'react'
-
+import { useContract } from '../context/ContractContext';
+import DatePicker from 'react-datepicker';
 export default function page(){
   const[isLockToken,setIsLockToken]=useState<boolean>(false);
   const[isVestingPeriod,setVestingPeriod]=useState<boolean>(false);
@@ -9,7 +10,10 @@ export default function page(){
   const[lockToken,setLockToken]=useState<string>();
   const[StakeholderAddress,setStakeholderAddres]=useState<string>();
   const[amount,setAmount]=useState<string>();
-
+  const [message,setMessage]=useState<string>();
+  const [startDate,setStartDate]=useState<Date>();
+  const [endDate,setEndDate]=useState<Date>();
+  const contractInst = useContract()?.contractInstance;
 
 
   const header =()=>{
@@ -17,9 +21,9 @@ export default function page(){
     <div className="text-white">
       
       <div className="flex mt-2 space-x-12">
-        <button  onClick={()=>{setIsLockToken(true),setVestingPeriod(false),setIsAddStakeholder(false)}}className=" bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Lock Tokens</button>
-        <button onClick={()=>{setVestingPeriod(true),setIsLockToken(false),setIsAddStakeholder(false)}} className="bg-transparent border border-blue-700 rounded px-3 py-1   text-sm transition hover:bg-white hover:text-blue-500">Vesting Period</button>
-        <button  onClick={()=>{setIsAddStakeholder(true),setVestingPeriod(false),setIsLockToken(false)}}className="bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Add Stakeholders</button>
+        <button  onClick={()=>{setIsLockToken(true),setVestingPeriod(false),setIsAddStakeholder(false);setError('')}}className=" bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Lock Tokens</button>
+        <button onClick={()=>{setVestingPeriod(true),setIsLockToken(false),setIsAddStakeholder(false);setError('')}} className="bg-transparent border border-blue-700 rounded px-3 py-1   text-sm transition hover:bg-white hover:text-blue-500">Vesting Period</button>
+        <button  onClick={()=>{setIsAddStakeholder(true),setVestingPeriod(false),setIsLockToken(false);setError('')}}className="bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Add Stakeholders</button>
       </div>
    
     </div>
@@ -27,8 +31,14 @@ export default function page(){
   }
 
   const LockToken=()=>{
-   const handleLock=()=>{
-
+   const handleLock=async()=>{
+    try{ let tx =await contractInst?.lockTokens(lockToken);
+      await tx.wait();
+      setMessage("Token Locked");
+    }catch(e:any){
+      setError(e.message);
+    }
+   
    }
     return( 
     <div className="flex flex-col items-center justify-center h-screen">
@@ -50,7 +60,7 @@ export default function page(){
         <input
           type="text"
           
-          className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
+          className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
           value={lockToken}
           onChange={(e) => setLockToken(e.target.value)}
         />
@@ -64,12 +74,13 @@ export default function page(){
       </button>
       <button
               className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-              onClick={()=>{setIsLockToken(false)}}
+              onClick={()=>{setIsLockToken(false);;setError('')}}
             >
               Back
             </button>
 
       {error && <p className="text-red-500">{error}</p>}
+      {message && <p className="text-green-500">{error}</p>}
     </div>
   </div>);
   }
@@ -77,7 +88,28 @@ export default function page(){
 
 
   const vesting=()=>{
-    const handleVesting=()=>{
+    const handleStartDateChange = (date:Date) => {
+    
+      setStartDate(date);
+    };
+  
+    const handleEndDateChange = (date:Date) => {
+      setEndDate(date);
+    };
+    const handleVesting=async()=>{
+      try{
+        const unixStDate= startDate?Math.floor(startDate.getTime() / 1000):null;
+        const unixEdDate=endDate?Math.floor(endDate.getTime() / 1000):null;
+       if(unixEdDate!=null&&unixStDate!=null){
+        let tx = await contractInst?.createVestingSchedule(unixStDate,unixEdDate,amount);
+        await tx.wait();
+        setMessage("Vesting schedule has been created");
+      }else{
+        setError("Date are null");
+      }
+      }catch(e:any){
+        setError(e.message);
+      }
 
     }
     return(
@@ -89,25 +121,13 @@ export default function page(){
         <label  className="block text-white">
           Start Date
         </label>
-        <input
-          type="text"
-          
-          className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
-          value={lockToken}
-          // onChange={(e) => setLockToken(e.target.value)} change required
-        />
+        <DatePicker selected={startDate} onChange={handleStartDateChange} />
       </div>
       <div className="mb-4">
         <label  className="block text-white">
           End Date
         </label>
-        <input
-          type="text"
-          
-          className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
-          value={lockToken}
-          // onChange={(e) => setLockToken(e.target.value)}
-        />
+        <DatePicker selected={startDate} onChange={()=>{handleEndDateChange}} />
       </div>
       <div className="mb-4">
         <label  className="block text-white">
@@ -116,9 +136,9 @@ export default function page(){
         <input
           type="text"
           
-          className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
-          value={lockToken}
-          // onChange={(e) => setLockToken(e.target.value)}
+          className="mt-1  text-black block w-full border rounded border-gray-300 px-3 py-2"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
         />
       </div>
 
@@ -130,12 +150,13 @@ export default function page(){
       </button>
       <button
               className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-              onClick={()=>{setVestingPeriod(false)}}
+              onClick={()=>{setVestingPeriod(false);;setError('')}}
             >
               Back
             </button>
 
       {error && <p className="text-red-500">{error}</p>}
+      {message && <p className="text-green-500">{error}</p>}
     </div>
   </div>
     );
@@ -144,8 +165,14 @@ export default function page(){
 
 
   const StakeholdersWhiteListing=()=>{
-    const handleWhiteListing=()=>{
-
+    const handleWhiteListing=async()=>{
+     try{
+   let tx = await contractInst?.whiteListStakeholders();
+   await tx.wait();
+   setMessage("Stakeholder WhiteListed");
+     }catch(e:any){
+      setError(e.message);
+     }
     }
     return(
 <div className="flex flex-col items-center justify-center h-screen">
@@ -159,8 +186,8 @@ export default function page(){
         <input
           type="text"
           
-          className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
-          value={lockToken}
+          className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
+          value={StakeholderAddress}
           onChange={(e) => setStakeholderAddres(e.target.value)}
         />
       </div>
@@ -172,8 +199,8 @@ export default function page(){
         <input
           type="text"
           
-          className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
-          value={lockToken}
+          className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
+          value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
       </div>
@@ -186,12 +213,13 @@ export default function page(){
       </button>
       <button
               className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-              onClick={()=>{setIsAddStakeholder(false)}}
+              onClick={()=>{setIsAddStakeholder(false);;setError('')}}
             >
               Back
             </button>
 
       {error && <p className="text-red-500">{error}</p>}
+      {message && <p className="text-green-500">{error}</p>}
     </div>
   </div>
     );

@@ -1,15 +1,19 @@
 "use client"
 import React,{useState} from 'react'
 import { useRouter } from 'next/navigation';
+import { useContract } from '../context/ContractContext';
 export default function page() {
 
 const [isSelected,setIsSelected] =useState<boolean>(false);
 const[isSelectedClaim,setIsSelectedClaim] = useState<boolean>(false); 
 const [isSelectedRegister,setIsSelectedRegister] = useState<boolean>(false);
-const [orgAddress,setOrgAddress]=useState<string>();
+const [orgAddress,setOrgAddress]=useState<string|undefined>();
+const [message,setMessage]=useState<string>();
 const [token,setToken]=useState<string>();
 const [error,setError]=useState<string>();
 const router = useRouter();
+const contractInst = useContract()?.contractInstance;
+
 const RegisterClaim=()=>{
     return(
         <div className="flex flex-col items-center text-center justify-center h-screen">
@@ -25,9 +29,18 @@ const RegisterClaim=()=>{
     }
     const Claim=()=>{
       
-        const handleClaim=()=>{
- 
-           setError("Vesting Period is not overed yet");
+      const handleClaim=async()=>{
+        if(orgAddress!=undefined){ 
+          try{
+          let tx = await contractInst?.claimTokens(orgAddress);
+          await tx.wait();
+          setMessage("Claim Successfull")
+          }catch(e:any){
+           setError(e.message);}
+          }else{
+            setError("Please enter a address");
+          }
+         
         }
      return(
         <div className="flex flex-col items-center justify-center h-screen">
@@ -41,7 +54,7 @@ const RegisterClaim=()=>{
           <input
             type="text"
             id="orgAddress"
-            className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
+            className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
             value={orgAddress}
             onChange={(e) => setOrgAddress(e.target.value)}
           />
@@ -55,12 +68,13 @@ const RegisterClaim=()=>{
         </button>
         <button
                 className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-                onClick={()=>{setIsSelectedClaim(false);setIsSelected(false)}}
+                onClick={()=>{setIsSelectedClaim(false);setIsSelected(false);setError('')}}
               >
                 Back
               </button>
 
         {error && <p className="text-red-500">{error}</p>}
+        {message && <p className="text-green-500">{error}</p>}
       </div>
     </div>
 
@@ -68,8 +82,16 @@ const RegisterClaim=()=>{
     }
 
     const Register=()=>{
-        const handleRegister=()=>{
-              router.push('/OrganisationDashboard');
+        const handleRegister=async()=>{
+          try{
+            let tx = await contractInst?.registerOrganization(orgAddress,token);
+            await tx.wait();
+            router.push('/organisationDashboard');
+          }catch(e:any){
+            setError(e.message)
+          }
+         
+              
         }
         return(
             <div className="flex flex-col items-center justify-center h-screen">
@@ -83,7 +105,7 @@ const RegisterClaim=()=>{
                 <input
                   type="text"
                   id="orgAddress"
-                  className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
+                  className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
                   value={orgAddress}
                   onChange={(e) => setOrgAddress(e.target.value)}
                 />
@@ -95,8 +117,8 @@ const RegisterClaim=()=>{
                 <input
                   type="text"
                   id="token"
-                  className="mt-1 block w-full border rounded border-gray-300 px-3 py-2"
-                  value={orgAddress}
+                  className="mt-1  text-black block w-full border rounded border-gray-300 px-3 py-2"
+                  value={token}
                   onChange={(e) => setToken(e.target.value)}
                 />
               </div>
@@ -110,12 +132,13 @@ const RegisterClaim=()=>{
               
               <button
                 className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-                onClick={()=>{setIsSelectedRegister(false);setIsSelected(false)}}
+                onClick={()=>{setIsSelectedRegister(false);setIsSelected(false);setError('')}}
               >
                 Back
               </button>
       
               {error && <p className="text-red-500">{error}</p>}
+              
             </div>
           </div>
         );
