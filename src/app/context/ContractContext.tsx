@@ -25,16 +25,20 @@ const contractAddress="0x377776f3954b8CF802b0fE4dA745De274B7ff724";
    
 
 async function getProvider(){
-    const ETHProvider:Eip1193Provider|null = await detectEthereumProvider();
-    if(ETHProvider){
-    setProvider(new ethers.BrowserProvider(ETHProvider));
+    if(typeof window !== "undefined")
+    {  const ETHProvider:Eip1193Provider|null = await detectEthereumProvider();
+        if(ETHProvider){
+            setProvider(new ethers.BrowserProvider(ETHProvider));
+            }
+            else{
+               alert("Please install metamask wallet to use this site")
+                 
+            }
     }
-    else{
-       alert("Please install metamask wallet to use this site")
-         
-    }
+  
+   
         }
-        getProvider();
+      
       
       
     

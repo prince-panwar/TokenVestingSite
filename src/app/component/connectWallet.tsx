@@ -12,23 +12,23 @@ export default function ConnectWallet() {
  const connect =  async() => {
   contract?.connectWallet();
 
-  // routeUser();
+  routeUser();
   
 };
  
 
 
 
-  // const routeUser= async()=>{
-  //   let tx = await contractInst?.isOrganization(user);
-  //   if(tx){
-  //     router.push(`/OrganisationDashboard`);
-  //     console.log("Routed to organisation dashboard");
-  //   }else{    
-  //     console.log("routed to Register&Claim");
-  //   router.push(`/Register&Claim`);}
+  const routeUser= async()=>{
+    let tx = await contractInst?.isOrganization(user);
+    if(tx){
+      router.push(`/OrganisationDashboard`);
+      console.log("Routed to organisation dashboard");
+    }else{    
+      console.log("routed to Register&Claim");
+    router.push(`/Register&Claim`);}
 
-  // }
+  }
   
   return (
     <div className='flex justify-center items-center h-screen'>
