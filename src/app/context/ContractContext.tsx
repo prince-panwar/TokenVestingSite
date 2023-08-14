@@ -3,7 +3,7 @@ import React, { createContext,useContext, useState } from 'react';
 import { ethers ,BrowserProvider,Eip1193Provider,Contract} from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
 import ContractAbi from "../../../hardhat/artifacts/contracts/Vesting.sol/TokenVesting.json";
-
+import { useRouter } from 'next/navigation';
 const ContractContext = createContext<ContractContextValue|undefined>(undefined);
 type ContractContextValue={
     currentUser:string|undefined,
@@ -22,7 +22,7 @@ const [currentUser,setCurrentUser] = useState<string|undefined>(undefined);
 const [provider,setProvider] = useState<BrowserProvider|undefined>();
 const abi = ContractAbi.abi;
 const contractAddress="0x377776f3954b8CF802b0fE4dA745De274B7ff724";
-   
+const router =useRouter();
 
 async function getProvider(){
     if(typeof window !== "undefined")
@@ -62,10 +62,20 @@ const getInstance= async()=>{
         const signer = await provider?.getSigner();
         const contractInst = new ethers.Contract(contractAddress,abi,signer);
         setContractInstance(contractInst);
-        
+        await routeUser();
         }catch(err:any){
           console.log(err.message);
         }
+      }
+const routeUser= async()=>{
+        let tx = await contractInstance?.isOrganization(currentUser);
+        if(tx){
+          router.push(`/OrganisationDashboard`);
+          console.log("Routed to organisation dashboard");
+        }else{    
+          console.log("routed to Register&Claim");
+        router.push(`/Register&Claim`);}
+    
       }
     
     

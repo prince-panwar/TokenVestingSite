@@ -36,7 +36,9 @@ const RegisterClaim=()=>{
           await tx.wait();
           setMessage("Claim Successfull")
           }catch(e:any){
-           setError(e.message);}
+           setError(e.message);
+          console.log(e);
+          }
           }else{
             setError("Please enter a address");
           }
