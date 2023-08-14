@@ -5,13 +5,13 @@ import { useContract } from '../context/ContractContext';
 
 
 export default function ConnectWallet() {
- const router = useRouter();
+ 
  const contract=useContract();
- const user = contract?.currentUser;
- const contractInst = contract?.contractInstance;
+
  
  const connect =  async() => {
  contract?.connectWallet();
+ console.log("function connectWallet called");
 };
  
 

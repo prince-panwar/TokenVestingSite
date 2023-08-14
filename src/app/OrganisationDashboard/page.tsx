@@ -1,7 +1,9 @@
 "use client"
-import React, { useState} from 'react'
+import React, { useState,useEffect} from 'react'
 import { useContract } from '../context/ContractContext';
 import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { useRouter } from 'next/navigation';
 export default function page(){
   const[isLockToken,setIsLockToken]=useState<boolean>(false);
   const[isVestingPeriod,setVestingPeriod]=useState<boolean>(false);
@@ -12,9 +14,14 @@ export default function page(){
   const[amount,setAmount]=useState<string>();
   const [message,setMessage]=useState<string>();
   const [startDate,setStartDate]=useState<Date>();
+  const router= useRouter();
   const [endDate,setEndDate]=useState<Date>();
   const contractInst = useContract()?.contractInstance;
-
+  useEffect(()=>{
+    if(!contractInst){
+      router.push('/');
+    }
+   })
 
   const header =()=>{
     return( <div className="flex justify-center items-center bg-transparent p-4">
@@ -31,11 +38,14 @@ export default function page(){
   }
 
   const LockToken=()=>{
+  
    const handleLock=async()=>{
+    console.log("Lock Tokens"+lockToken);
     try{ let tx =await contractInst?.lockTokens(lockToken);
       await tx.wait();
       setMessage("Token Locked");
     }catch(e:any){
+      console.log(e);
       setError(e.message);
     }
    
@@ -46,7 +56,7 @@ export default function page(){
   <p>
     <em>Please approve sufficient Tokens for the below address before Locking them.</em>
     <br />
-    <em>contract address: 0x377776f3954b8CF802b0fE4dA745De274B7ff724</em>
+    <em>contract address: 0x709aC622631Add3633558cD7987499dbd4733A65</em>
   </p>
 </div> 
        
@@ -102,7 +112,7 @@ export default function page(){
         const unixEdDate=endDate?Math.floor(endDate.getTime() / 1000):null;
        if(unixEdDate!=null&&unixStDate!=null){
         let tx = await contractInst?.createVestingSchedule(unixStDate,unixEdDate,amount);
-        await tx.wait();
+        
         setMessage("Vesting schedule has been created");
       }else{
         setError("Date are null");
@@ -127,7 +137,7 @@ export default function page(){
         <label  className="block text-white">
           End Date
         </label>
-        <DatePicker selected={startDate} onChange={()=>{handleEndDateChange}} />
+        <DatePicker selected={endDate} onChange={handleEndDateChange} />
       </div>
       <div className="mb-4">
         <label  className="block text-white">
@@ -167,8 +177,8 @@ export default function page(){
   const StakeholdersWhiteListing=()=>{
     const handleWhiteListing=async()=>{
      try{
-   let tx = await contractInst?.whiteListStakeholders();
-   await tx.wait();
+   let tx = await contractInst?.whiteListStakeholders(StakeholderAddress,amount);
+    await tx.wait();
    setMessage("Stakeholder WhiteListed");
      }catch(e:any){
       setError(e.message);
@@ -196,7 +206,7 @@ export default function page(){
         <label  className="block text-white">
           Amount
         </label>
-        <input
+        <input 
           type="text"
           
           className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
@@ -228,6 +238,14 @@ export default function page(){
 
     return (
      <>
+       <div>
+   <div className="text-green-500 text-center mb-4">
+   <p>
+     <em>Already a Registered Organisation, Click </em><button onClick={()=>{router.push('OrganisationDashboard')}}>here</button>
+    
+   </p>
+ </div> 
+ </div>
      {header()}
      {!isAddStakeholder&&!isLockToken&&!isVestingPeriod&&( <div className="flex flex-col items-center justify-center text-lg h-screen  text-center font-extralight text-size-lg"><h1>Welcome to the Dashboad you can lock tokens , schedule vesting period and add Stakeholders here</h1></div> )}
      {isLockToken&&(LockToken())}

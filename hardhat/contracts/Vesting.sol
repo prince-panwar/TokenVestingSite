@@ -33,16 +33,15 @@ contract TokenVesting is Ownable {
 
     mapping(address => Organization) public organizations;
 
-   function registerOrganization(address _orgAddress, IERC20 _token) external  {
-    organizations[_orgAddress].orgAddress = _orgAddress;
-    organizations[_orgAddress].token = _token;
-    emit organizationRegistered(_orgAddress);
+   function registerOrganization( IERC20 _token) external  {
+    organizations[msg.sender].orgAddress = msg.sender;
+    organizations[msg.sender].token = _token;
+    emit organizationRegistered(msg.sender);
 }
     function lockTokens(uint256 _amount) external {
-        require(organizations[msg.sender].orgAddress != address(0), "Organization not registered");
-        organizations[msg.sender].token.approve(address(this),_amount*10**18);
-        organizations[msg.sender].token.transferFrom(msg.sender, address(this), _amount*10**18);
-        emit TokensLocked(_amount);
+    require(organizations[msg.sender].orgAddress != address(0), "Organization not registered");
+    organizations[msg.sender].token.transferFrom(msg.sender, address(this), _amount*10**18);
+    emit TokensLocked(_amount);
     }
 
     function createVestingSchedule(
@@ -50,9 +49,8 @@ contract TokenVesting is Ownable {
         uint256 _endTime,
         uint256 _amount
     ) external onlyRegisteredOrg {
-       require(_startTime>=block.timestamp,"Start date cannot be in the past");
-       require(_startTime<_endTime,"End date cannot be before the start date");
-       require(block.timestamp<_endTime,"End date cannot be before present");
+      require(_startTime<_endTime,"End date cannot be before the start date");
+      require(block.timestamp<_endTime,"End date cannot be before present");
       organizations[msg.sender].vestingSchedule=VestingSchedule(_startTime, _endTime, _amount*10**18);
       emit VestingScheduleCreated(_startTime, _endTime, _amount);
         

@@ -21,7 +21,7 @@ const [contractInstance,setContractInstance] = useState<Contract|undefined>();
 const [currentUser,setCurrentUser] = useState<string|undefined>(undefined);
 const [provider,setProvider] = useState<BrowserProvider|undefined>();
 const abi = ContractAbi.abi;
-const contractAddress="0x377776f3954b8CF802b0fE4dA745De274B7ff724";
+const contractAddress="0x709aC622631Add3633558cD7987499dbd4733A65";
 const router =useRouter();
 
 async function getProvider(){
@@ -43,8 +43,9 @@ async function getProvider(){
       
     
 const connectWallet =async()=>{
+  await getProvider();
       try{
-        getProvider();
+        
         if(provider){
         const account = await provider.send('eth_requestAccounts',[]);
         setCurrentUser(account[0]);
@@ -68,13 +69,9 @@ const getInstance= async()=>{
         }
       }
 const routeUser= async()=>{
-        let tx = await contractInstance?.isOrganization(currentUser);
-        if(tx){
-          router.push(`/OrganisationDashboard`);
-          console.log("Routed to organisation dashboard");
-        }else{    
-          console.log("routed to Register&Claim");
-        router.push(`/Register&Claim`);}
+          
+        console.log("routed to Register&Claim");
+        router.push(`/Register&Claim`);
     
       }
     

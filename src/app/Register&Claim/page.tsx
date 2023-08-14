@@ -1,18 +1,28 @@
 "use client"
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import { useRouter } from 'next/navigation';
 import { useContract } from '../context/ContractContext';
+import UserAddress from '../component/UserAddress';
 export default function page() {
 
 const [isSelected,setIsSelected] =useState<boolean>(false);
 const[isSelectedClaim,setIsSelectedClaim] = useState<boolean>(false); 
 const [isSelectedRegister,setIsSelectedRegister] = useState<boolean>(false);
-const [orgAddress,setOrgAddress]=useState<string|undefined>();
+const [ClaimorgAddress,setClaimOrgAddress]=useState<string|undefined>();
+const [RegisterorgAddress,setRegisterOrgAddress]=useState<string|undefined>();
 const [message,setMessage]=useState<string>();
 const [token,setToken]=useState<string>();
 const [error,setError]=useState<string>();
 const router = useRouter();
 const contractInst = useContract()?.contractInstance;
+
+ 
+ useEffect(() => {
+  if(!contractInst){
+    router.push('/');
+  }
+
+}, []);
 
 const RegisterClaim=()=>{
     return(
@@ -30,22 +40,24 @@ const RegisterClaim=()=>{
     const Claim=()=>{
       
       const handleClaim=async()=>{
-        if(orgAddress!=undefined){ 
+        if(ClaimorgAddress!=undefined){ 
           try{
-          let tx = await contractInst?.claimTokens(orgAddress);
-          await tx.wait();
+          let tx = await contractInst?.claimTokens(ClaimorgAddress);
+          
           setMessage("Claim Successfull")
           }catch(e:any){
            setError(e.message);
+           setClaimOrgAddress(undefined);
           console.log(e);
           }
           }else{
             setError("Please enter a address");
+            setClaimOrgAddress(undefined);
           }
          
         }
      return(
-        <div className="flex flex-col items-center justify-center h-screen">
+        <div className="flex flex-col items-center justify-center h-screen overflow-y-scroll">
       <div className=" w-full max-w-lg p-6  border rounded border-blue-700">
         <h2 className="text-2xl mb-4">Claim Tokens</h2>
 
@@ -57,8 +69,8 @@ const RegisterClaim=()=>{
             type="text"
             id="orgAddress"
             className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
-            value={orgAddress}
-            onChange={(e) => setOrgAddress(e.target.value)}
+            value={ClaimorgAddress}
+            onChange={(e) => setClaimOrgAddress(e.target.value)}
           />
         </div>
 
@@ -70,7 +82,7 @@ const RegisterClaim=()=>{
         </button>
         <button
                 className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-                onClick={()=>{setIsSelectedClaim(false);setIsSelected(false);setError('')}}
+                onClick={()=>{setIsSelectedClaim(false);setIsSelected(false);setError(''),setClaimOrgAddress(undefined)}}
               >
                 Back
               </button>
@@ -85,12 +97,15 @@ const RegisterClaim=()=>{
 
     const Register=()=>{
         const handleRegister=async()=>{
+          console.log("ord add:"+RegisterorgAddress+"Token"+token)
           try{
-            let tx = await contractInst?.registerOrganization(orgAddress,token);
+            let tx = await contractInst?.registerOrganization(token);
             await tx.wait();
-            router.push('/organisationDashboard');
-          }catch(e:any){
+            router.push("/OrganisationDashboard");
+           }catch(e:any){
             setError(e.message)
+            setRegisterOrgAddress(undefined);
+            setToken(undefined);
           }
          
               
@@ -100,18 +115,7 @@ const RegisterClaim=()=>{
             <div className=" w-full max-w-lg p-6 border rounded border-blue-700">
               <h2 className="text-2xl mb-4">Register Organisation</h2>
       
-              <div className="mb-4">
-                <label htmlFor="orgAddress" className="block text-white">
-                  Enter Organisation Address
-                </label>
-                <input
-                  type="text"
-                  id="orgAddress"
-                  className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
-                  value={orgAddress}
-                  onChange={(e) => setOrgAddress(e.target.value)}
-                />
-              </div>
+             
               <div className="mb-4">
                 <label htmlFor="orgAddress" className="block text-white">
                   Enter Token Address
@@ -134,7 +138,7 @@ const RegisterClaim=()=>{
               
               <button
                 className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-                onClick={()=>{setIsSelectedRegister(false);setIsSelected(false);setError('')}}
+                onClick={()=>{setIsSelectedRegister(false);setIsSelected(false);setError(''),setRegisterOrgAddress(undefined),setToken(undefined)}}
               >
                 Back
               </button>
@@ -149,8 +153,24 @@ const RegisterClaim=()=>{
     
   return (
    <>
+   <div className="fixed top-0 left-0 p-4">
+        <UserAddress />
+      </div>
    {/* show RegisterClaim if not selected anything */}
- {!isSelected&&(RegisterClaim())}
+  
+ {!isSelected&&(
+  <div>
+   <div className="text-green-500 text-center mb-4">
+   <p>
+     <em>Already a Registered Organisation, Click </em><button onClick={()=>{router.push('OrganisationDashboard')}}>here</button>
+    
+   </p>
+ </div> 
+
+ { RegisterClaim()}
+  </div>
+ 
+ )}
  {isSelectedClaim&&(Claim())}
  {isSelectedRegister&&(Register())}
    </>
