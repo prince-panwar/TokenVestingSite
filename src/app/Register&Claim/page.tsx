@@ -27,6 +27,7 @@ const contractInst = useContract()?.contractInstance;
 const RegisterClaim=()=>{
     return(
         <div className="flex flex-col items-center text-center justify-center h-screen">
+            <p className="text-sm text-blue-700">Already a Registered Organisation, Click <button onClick={()=>{router.push('OrganisationDashboard')}}>here</button></p>
             <div className="w-full max-w-md p-6 border rounded border-blue-700">
               <h2 className="text-2xl mb-4">Register as a New Organization</h2>
               <button onClick={()=>{setIsSelectedRegister(true);setIsSelected(true)}} className="bg-blue-500  hover:bg-blue-700 text-white px-4 py-2 rounded mb-4">Click here to register</button>
@@ -112,7 +113,7 @@ const RegisterClaim=()=>{
         }
         return(
             <div className="flex flex-col items-center justify-center h-screen">
-            <div className=" w-full max-w-lg p-6 border rounded border-blue-700">
+             <div className=" w-full max-w-lg p-6 border rounded border-blue-700">
               <h2 className="text-2xl mb-4">Register Organisation</h2>
       
              
@@ -158,19 +159,7 @@ const RegisterClaim=()=>{
       </div>
    {/* show RegisterClaim if not selected anything */}
   
- {!isSelected&&(
-  <div>
-   <div className="text-green-500 text-center mb-4">
-   <p>
-     <em>Already a Registered Organisation, Click </em><button onClick={()=>{router.push('OrganisationDashboard')}}>here</button>
-    
-   </p>
- </div> 
-
- { RegisterClaim()}
-  </div>
- 
- )}
+ {!isSelected&&(RegisterClaim())}
  {isSelectedClaim&&(Claim())}
  {isSelectedRegister&&(Register())}
    </>

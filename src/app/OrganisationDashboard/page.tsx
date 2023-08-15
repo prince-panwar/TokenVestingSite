@@ -4,9 +4,9 @@ import { useContract } from '../context/ContractContext';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { useRouter } from 'next/navigation';
+import UserAddress from '../component/UserAddress';
 export default function page(){
   const[isLockToken,setIsLockToken]=useState<boolean>(false);
-  const[isVestingPeriod,setVestingPeriod]=useState<boolean>(false);
   const[isAddStakeholder,setIsAddStakeholder]=useState<boolean>(false);
   const [error,setError]=useState<string>();
   const[lockToken,setLockToken]=useState<string>();
@@ -28,9 +28,9 @@ export default function page(){
     <div className="text-white">
       
       <div className="flex mt-2 space-x-12">
-        <button  onClick={()=>{setIsLockToken(true),setVestingPeriod(false),setIsAddStakeholder(false);setError('')}}className=" bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Lock Tokens</button>
-        <button onClick={()=>{setVestingPeriod(true),setIsLockToken(false),setIsAddStakeholder(false);setError('')}} className="bg-transparent border border-blue-700 rounded px-3 py-1   text-sm transition hover:bg-white hover:text-blue-500">Vesting Period</button>
-        <button  onClick={()=>{setIsAddStakeholder(true),setVestingPeriod(false),setIsLockToken(false);setError('')}}className="bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Add Stakeholders</button>
+        <UserAddress/>
+        <button  onClick={()=>{setIsLockToken(true),setIsAddStakeholder(false);setError('')}}className=" bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Lock Tokens</button>
+        <button  onClick={()=>{setIsAddStakeholder(true),setIsLockToken(false);setError('')}}className="bg-transparent border border-blue-700 rounded px-3 py-1  text-sm transition hover:bg-white hover:text-blue-500">Add Stakeholders</button>
       </div>
    
     </div>
@@ -56,7 +56,7 @@ export default function page(){
   <p>
     <em>Please approve sufficient Tokens for the below address before Locking them.</em>
     <br />
-    <em>contract address: 0xDf6dE6d3Db7Cf83Bb837009C3874A88A45482888</em>
+    <em>contract address: 0xaFF4b45DDBB851731EC1cCe24fB2C7141A953Ffe</em>
   </p>
 </div> 
        
@@ -96,91 +96,25 @@ export default function page(){
   }
 
 
-
-  const vesting=()=>{
+const StakeholdersWhiteListing=()=>{
     const handleStartDateChange = (date:Date) => {
-    
-      setStartDate(date);
+     setStartDate(date);
     };
   
     const handleEndDateChange = (date:Date) => {
       setEndDate(date);
     };
-    const handleVesting=async()=>{
-      try{
-        const unixStDate= startDate?Math.floor(startDate.getTime() / 1000):null;
-        const unixEdDate=endDate?Math.floor(endDate.getTime() / 1000):null;
-       if(unixEdDate!=null&&unixStDate!=null){
-        let tx = await contractInst?.createVestingSchedule(unixStDate,unixEdDate,amount);
-        
-        setMessage("Vesting schedule has been created");
-      }else{
-        setError("Date are null");
-      }
-      }catch(e:any){
-        setError(e.message);
-      }
-
-    }
-    return(
-<div className="flex flex-col items-center justify-center h-screen">
-   <div className=" w-full max-w-lg p-6  border rounded border-blue-700">
-      <h2 className="text-2xl mb-4">Vesting Schedule</h2>
-
-      <div className="mb-4">
-        <label  className="block text-white">
-          Start Date
-        </label>
-        <DatePicker selected={startDate} onChange={handleStartDateChange} />
-      </div>
-      <div className="mb-4">
-        <label  className="block text-white">
-          End Date
-        </label>
-        <DatePicker selected={endDate} onChange={handleEndDateChange} />
-      </div>
-      <div className="mb-4">
-        <label  className="block text-white">
-          Amount
-        </label>
-        <input
-          type="text"
-          
-          className="mt-1  text-black block w-full border rounded border-gray-300 px-3 py-2"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </div>
-
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-        onClick={handleVesting}
-      >
-        Lock
-      </button>
-      <button
-              className="bg-orange-500 text-white px-4 py-2 rounded mb-4 ml-3"
-              onClick={()=>{setVestingPeriod(false);;setError('')}}
-            >
-              Back
-            </button>
-
-      {error && <p className="text-red-500">{error}</p>}
-      {message && <p className="text-green-500">{error}</p>}
-    </div>
-  </div>
-    );
-  }
-
-
-
-  const StakeholdersWhiteListing=()=>{
     const handleWhiteListing=async()=>{
-     try{
-   let tx = await contractInst?.whiteListStakeholders(StakeholderAddress,amount);
-    await tx.wait();
-   setMessage("Stakeholder WhiteListed");
-     }catch(e:any){
+  try{
+      const unixStDate= startDate?Math.floor(startDate.getTime() / 1000):null;
+      const unixEdDate=endDate?Math.floor(endDate.getTime() / 1000):null;
+      if(unixEdDate!=null&&unixStDate!=null){
+        let tx = await contractInst?.whiteListStakeholders(StakeholderAddress,amount);
+        await tx.wait();
+        console.log("Stakeholders added");
+        setMessage("Stakeholder WhiteListed");}
+     }
+  catch(e:any){
       setError(e.message);
      }
     }
@@ -188,11 +122,10 @@ export default function page(){
 <div className="flex flex-col items-center justify-center h-screen">
    <div className=" w-full max-w-lg p-6  border rounded border-blue-700">
       <h2 className="text-2xl mb-4">WhiteList Stakeholders</h2>
-
-      <div className="mb-4">
-        <label  className="block text-white">
-          Stakeholder address
-        </label>
+        <div className="mb-4">
+         <label  className="block text-white">
+           Stakeholder address
+         </label>
         <input
           type="text"
           
@@ -214,6 +147,31 @@ export default function page(){
           onChange={(e) => setAmount(e.target.value)}
         />
       </div>
+      <div className="mb-4">
+        <label  className="block text-white">
+          Start Date
+        </label>
+        <DatePicker className='text-black' selected={startDate} onChange={handleStartDateChange} />
+      </div>
+      <div className="mb-4">
+        <label  className="block text-white">
+          End Date
+        </label>
+        <DatePicker className='text-black' selected={endDate} onChange={handleEndDateChange} />
+      </div>
+      <div className="mb-4">
+        <label  className="block text-white">
+          Amount
+        </label>
+        <input
+          type="text"
+          
+          className="mt-1  text-black block w-full border rounded border-gray-300 px-3 py-2"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+      </div>
+
 
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
@@ -238,18 +196,9 @@ export default function page(){
 
     return (
      <>
-       <div>
-   <div className="text-green-500 text-center mb-4">
-   <p>
-     <em>Already a Registered Organisation, Click </em><button onClick={()=>{router.push('OrganisationDashboard')}}>here</button>
-    
-   </p>
- </div> 
- </div>
      {header()}
-     {!isAddStakeholder&&!isLockToken&&!isVestingPeriod&&( <div className="flex flex-col items-center justify-center text-lg h-screen  text-center font-extralight text-size-lg"><h1>Welcome to the Dashboad you can lock tokens , schedule vesting period and add Stakeholders here</h1></div> )}
+     {!isAddStakeholder&&!isLockToken&&( <div className="flex flex-col items-center justify-center text-lg h-screen  text-center font-extralight text-size-lg"><h1>Welcome to the Dashboad you can lock tokens , schedule vesting period and add Stakeholders here</h1></div> )}
      {isLockToken&&(LockToken())}
-     {isVestingPeriod&&(vesting())}
      {isAddStakeholder&&(StakeholdersWhiteListing())}
      </>
     

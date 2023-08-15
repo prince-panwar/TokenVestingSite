@@ -5,8 +5,10 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract TokenVesting is Ownable {
+
+contract TokenVesting is Ownable , ReentrancyGuard{
    
 struct Stakeholder{
     address stakeholderAddress;
@@ -37,6 +39,7 @@ struct Stakeholder{
 }
     function lockTokens(uint256 _amount) external {
     require(organizations[msg.sender].orgAddress != address(0), "Organization not registered");
+    require(organizations[msg.sender].token.approve(address(this),_amount),"Amount not approved");
     organizations[msg.sender].token.transferFrom(msg.sender, address(this), _amount*10**18);
     
     }
@@ -97,6 +100,9 @@ struct Stakeholder{
     }
     function getToken() external  view onlyRegisteredOrg returns (uint256){
         return organizations[msg.sender].token.balanceOf(address(this));
+    }
+      function getTokenAddress() external view  onlyRegisteredOrg returns (IERC20){
+        return organizations[msg.sender].token;
     }
 
     modifier onlyRegisteredOrg (){

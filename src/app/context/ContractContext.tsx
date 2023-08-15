@@ -27,7 +27,7 @@ const [contractInstance,setContractInstance] = useState<Contract|undefined>();
 const [currentUser,setCurrentUser] = useState<string|undefined>(undefined);
 const [provider,setProvider] = useState<BrowserProvider|undefined>();
 const abi = ContractAbi.abi;
-const contractAddress="0xDf6dE6d3Db7Cf83Bb837009C3874A88A45482888";
+const contractAddress="0xaFF4b45DDBB851731EC1cCe24fB2C7141A953Ffe";
 const router =useRouter();
 
 async function getProvider(){
@@ -45,13 +45,18 @@ async function getProvider(){
    
         }
       
-  const updateCurrentWalletAddress = async () => {
-          const accounts:Maybe<string[]> = await window.ethereum?.request({
-            method: "eth_requestAccounts",
-          });
-          if (accounts) {
-          setCurrentUser(accounts[0]);
-          console.log("Accounts updated");
+        const updateCurrentWalletAddress = async () => {
+          try {
+            const accounts: Maybe<string[]> = await window.ethereum?.request({
+              method: "eth_requestAccounts",
+            });
+        
+            if (accounts) {
+              setCurrentUser(accounts[0]);
+              console.log("Accounts updated");
+            }
+          } catch (error) {
+            console.error("Error updating wallet address:", error);
           }
         };
       
