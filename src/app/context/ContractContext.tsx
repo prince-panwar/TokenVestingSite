@@ -3,7 +3,9 @@ import React, { createContext,useContext, useState } from 'react';
 import { ethers ,BrowserProvider,Eip1193Provider,Contract} from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
 import ContractAbi from "../../../hardhat/artifacts/contracts/Vesting.sol/TokenVesting.json";
+import { MetaMaskInpageProvider } from "@metamask/providers"
 import { useRouter } from 'next/navigation';
+import { Maybe } from '@metamask/providers/dist/utils';
 const ContractContext = createContext<ContractContextValue|undefined>(undefined);
 type ContractContextValue={
     currentUser:string|undefined,
@@ -14,14 +16,18 @@ type ContractContextValue={
 interface ContractProviderProps {
     children: React.ReactNode;
   }
- 
+  declare global {
+    interface Window{
+      ethereum?:MetaMaskInpageProvider
+    }
+  }
 
 export const ContractProvider:React.FC<ContractProviderProps> = ({ children }) => {
 const [contractInstance,setContractInstance] = useState<Contract|undefined>();
 const [currentUser,setCurrentUser] = useState<string|undefined>(undefined);
 const [provider,setProvider] = useState<BrowserProvider|undefined>();
 const abi = ContractAbi.abi;
-const contractAddress="0x709aC622631Add3633558cD7987499dbd4733A65";
+const contractAddress="0xDf6dE6d3Db7Cf83Bb837009C3874A88A45482888";
 const router =useRouter();
 
 async function getProvider(){
@@ -39,7 +45,15 @@ async function getProvider(){
    
         }
       
-      
+  const updateCurrentWalletAddress = async () => {
+          const accounts:Maybe<string[]> = await window.ethereum?.request({
+            method: "eth_requestAccounts",
+          });
+          if (accounts) {
+          setCurrentUser(accounts[0]);
+          console.log("Accounts updated");
+          }
+        };
       
     
 const connectWallet =async()=>{
@@ -49,6 +63,7 @@ const connectWallet =async()=>{
         if(provider){
         const account = await provider.send('eth_requestAccounts',[]);
         setCurrentUser(account[0]);
+        window.ethereum?.on('accountsChanged', updateCurrentWalletAddress);
         getInstance();
         console.log("connect wallet called")
         }
