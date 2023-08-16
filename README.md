@@ -1,34 +1,51 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DApp: Token Vesting
 
-## Getting Started
+Welcome to the Organization Token Management DApp! This DApp is designed to allow organizations to register themselves and set up vesting schedules for their users. The smart contract powering this DApp is deployed on the Avalanche Fuji C testnet.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+- Organization Registration: Organizations can register themselves and provide relevant information.
+- Token Management: Organizations can lock tokens and manage their distribution.
+- User Management: Organizations can add users and specify vesting schedules.
+- Vesting Schedule: Users can claim tokens according to the specified vesting schedule.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository: git clone
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+2. Install dependencies: npm install
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Deploy no localhost: npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Compile and deploy the smart contracts: npm hardhat run scripts/deploy.js --network <network name>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Usage
+
+1. Access the DApp through your web browser. you will need a Metamask wallet to connect
+
+2. Organizations can register by providing their token address information.
+
+3. Organizations can manage tokens by locking them.
+
+4. Organizations can add users and set up vesting schedules for them.
+
+  5. When the vesting period starts, users can claim their tokens.
+
+
+## Contributing
+
+Contributions are welcome! Feel free to submit pull requests or issues if you find bugs or want to enhance the DApp's functionality.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+
+
+
+
