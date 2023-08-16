@@ -89,7 +89,7 @@ const RegisterClaim=()=>{
               </button>
 
         {error && <p className="text-red-500">{error}</p>}
-        {message && <p className="text-green-500">{error}</p>}
+        {message && <p className="text-green-500">{message}</p>}
       </div>
     </div>
 

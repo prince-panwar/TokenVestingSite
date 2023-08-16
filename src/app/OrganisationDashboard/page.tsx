@@ -40,10 +40,11 @@ export default function page(){
   const LockToken=()=>{
   
    const handleLock=async()=>{
-    console.log("Lock Tokens"+lockToken);
+    
     try{ let tx =await contractInst?.lockTokens(lockToken);
       await tx.wait();
       setMessage("Token Locked");
+      console.log("Lock Tokens"+lockToken);
     }catch(e:any){
       console.log(e);
       setError(e.message);
@@ -90,7 +91,7 @@ export default function page(){
             </button>
 
       {error && <p className="text-red-500">{error}</p>}
-      {message && <p className="text-green-500">{error}</p>}
+      {message && <p className="text-green-500">{message}</p>}
     </div>
   </div>);
   }
@@ -109,7 +110,7 @@ const StakeholdersWhiteListing=()=>{
       const unixStDate= startDate?Math.floor(startDate.getTime() / 1000):null;
       const unixEdDate=endDate?Math.floor(endDate.getTime() / 1000):null;
       if(unixEdDate!=null&&unixStDate!=null){
-        let tx = await contractInst?.whiteListStakeholders(StakeholderAddress,amount);
+        let tx = await contractInst?.whiteListStakeholders(StakeholderAddress,amount,unixStDate,unixEdDate);
         await tx.wait();
         console.log("Stakeholders added");
         setMessage("Stakeholder WhiteListed");}
@@ -132,19 +133,6 @@ const StakeholdersWhiteListing=()=>{
           className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
           value={StakeholderAddress}
           onChange={(e) => setStakeholderAddres(e.target.value)}
-        />
-      </div>
-      
-      <div className="mb-4">
-        <label  className="block text-white">
-          Amount
-        </label>
-        <input 
-          type="text"
-          
-          className="mt-1 text-black block w-full border rounded border-gray-300 px-3 py-2"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
         />
       </div>
       <div className="mb-4">
@@ -187,7 +175,7 @@ const StakeholdersWhiteListing=()=>{
             </button>
 
       {error && <p className="text-red-500">{error}</p>}
-      {message && <p className="text-green-500">{error}</p>}
+      {message && <p className="text-green-500">{message}</p>}
     </div>
   </div>
     );
