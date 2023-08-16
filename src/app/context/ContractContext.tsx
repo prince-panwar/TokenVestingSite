@@ -2,7 +2,7 @@
 import React, { createContext,useContext, useState } from 'react';
 import { ethers ,BrowserProvider,Eip1193Provider,Contract} from 'ethers';
 import detectEthereumProvider from '@metamask/detect-provider';
-import ContractAbi from "../../../hardhat/artifacts/contracts/Vesting.sol/TokenVesting.json";
+import ContractAbi from "../../../artifacts/contracts/Vesting.sol/TokenVesting.json";
 import { MetaMaskInpageProvider } from "@metamask/providers"
 import { useRouter } from 'next/navigation';
 import { Maybe } from '@metamask/providers/dist/utils';
