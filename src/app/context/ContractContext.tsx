@@ -27,7 +27,7 @@ const [contractInstance,setContractInstance] = useState<Contract|undefined>();
 const [currentUser,setCurrentUser] = useState<string|undefined>(undefined);
 const [provider,setProvider] = useState<BrowserProvider|undefined>();
 const abi = ContractAbi.abi;
-const contractAddress="0xF620f16B90AF6266e06FE58d2A04e4D9684b742D";
+const contractAddress="0xaFF4b45DDBB851731EC1cCe24fB2C7141A953Ffe";
 const router =useRouter();
 
 async function getProvider(){

@@ -73,8 +73,8 @@ struct Stakeholder{
 
     function claimTokens(address org) external  {
       require( organizations[org].orgAddress!=address(0),"Not a Registered Organisation");
-      require(block.timestamp<=organizations[org].stakeholder[msg.sender].vestingSchedule.startTime,"Vesting period not started yet");
-      require(block.timestamp>=organizations[org].stakeholder[msg.sender].vestingSchedule.endTime,"The claiming period is over");
+      require(block.timestamp>=organizations[org].stakeholder[msg.sender].vestingSchedule.startTime,"Vesting period not started yet");
+      require(block.timestamp<=organizations[org].stakeholder[msg.sender].vestingSchedule.endTime,"The claiming period is over");
       require(organizations[org].stakeholder[msg.sender].stakeholderAddress!=address(0),"You are not white Listed for the claim");
       require(organizations[org].stakeholder[msg.sender].isClaimed!=true,"You have already claimed the amount");
       require(organizations[org].stakeholder[msg.sender].isWhitelisted==true,"You are not white Listed for the claim");
@@ -85,7 +85,7 @@ struct Stakeholder{
     }
 
     function getDate() external view  returns (uint256){
-        return block.timestamp;
+        return block.timestamp;                                                                
     }
     function getVestingSchedule (address _Stakeholder) external  view returns ( uint256 startTime, uint256 endTime,uint256 amount){
         endTime = organizations[msg.sender].stakeholder[_Stakeholder].vestingSchedule.endTime;
