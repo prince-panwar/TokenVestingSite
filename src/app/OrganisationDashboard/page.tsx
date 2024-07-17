@@ -57,7 +57,7 @@ export default function page(){
   <p>
     <em>Please approve sufficient Tokens for the below address before Locking them.</em>
     <br />
-    <em>contract address: 0xaFF4b45DDBB851731EC1cCe24fB2C7141A953Ffe</em>
+    <em>contract address: 0xE5bCDAdB614A88195eD4526dF437F2A3D08F7d16</em>
   </p>
 </div> 
        
